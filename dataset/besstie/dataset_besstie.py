@@ -38,6 +38,7 @@ class BesstieDataSet(Dataset):
                     continue
                 text, label, variety, source, task = row
 
+                #TODO: check if partial filtering is possible (e.g., variety only)
                 if self.variety and variety != self.variety or \
                     self.source and source != self.source or \
                     self.task and task != self.task:
@@ -45,6 +46,8 @@ class BesstieDataSet(Dataset):
 
                 if len(text.split()) < self.min_length:
                     continue
+
+                #TODO: check if label is in classes of interest
                 # if label not in self.class_converter.values():
                 #     continue
 
@@ -102,7 +105,7 @@ if __name__ == "__main__":
     )
 
     print(f"Dataset size: {len(dataset)}")
-    sample = dataset[28]
+    sample = dataset[0]
     print(f"Sample text: {sample['text']}")
     print(f"Reconstructed Text: {tokenizer.decode(sample['input_ids'], skip_special_tokens=True)}")
     print(f"Input IDs: {sample['input_ids']}")
@@ -114,7 +117,6 @@ if __name__ == "__main__":
         assert sample['attention_mask'].shape[0] == max_length
         assert sample['label'].item() in range(len(dataset.classes))
         # print(f"Text length (in words): {len(sample['text'].split())}")
-        # print(sample['text'])
-        assert min_length <= sample["input_ids"].shape[0] <= max_length
-
-
+        # print((sample["input_ids"] != 0).sum().item())
+        assert min_length <= (sample["input_ids"] != 0).sum().item() <= max_length
+    print("All samples passed the checks.")
