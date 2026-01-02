@@ -37,13 +37,13 @@ class BesstieDataSet(Dataset):
                 for row in reader:
                     if len(row) < 4:
                         continue
-                    text, variety, sentiment_label, sarcasm_label = row
+                    text, variety, sarcasm_label, sentiment_label = row
 
                     if self.variety and variety != self.variety:
                         continue
 
                     self.texts.append(text)
-                    self.labels.append((self.class_converter[sentiment_label], self.class_converter[sarcasm_label]))
+                    self.labels.append((self.class_converter[sarcasm_label], self.class_converter[sentiment_label]))
             
             else:
                 for row in reader:
