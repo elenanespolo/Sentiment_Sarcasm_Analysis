@@ -33,26 +33,39 @@ class BesstieDataSet(Dataset):
                 next(reader)
 
             # columns: text,label,variety,source,task
-            for row in reader:
-                if len(row) < 5:
-                    continue
-                text, label, variety, source, task = row
+            if self.task == 'Sentiment-Sarcasm':
+                for row in reader:
+                    if len(row) < 4:
+                        continue
+                    text, variety, sentiment_label, sarcasm_label = row
 
-                #TODO: check if partial filtering is possible (e.g., variety only)
-                if self.variety and variety != self.variety or \
-                    self.source and source != self.source or \
-                    self.task and task != self.task:
-                    continue
+                    if self.variety and variety != self.variety:
+                        continue
 
-                if len(text.split()) < self.min_length:
-                    continue
+                    self.texts.append(text)
+                    self.labels.append((self.class_converter[sentiment_label], self.class_converter[sarcasm_label]))
+            
+            else:
+                for row in reader:
+                    if len(row) < 5:
+                        continue
+                    text, label, variety, source, task = row
 
-                #TODO: check if label is in classes of interest
-                # if label not in self.class_converter.values():
-                #     continue
+                    #TODO: check if partial filtering is possible (e.g., variety only)
+                    if self.variety and variety != self.variety or \
+                        self.source and source != self.source or \
+                        self.task and task != self.task:
+                        continue
 
-                self.texts.append(text)
-                self.labels.append(self.class_converter[label])
+                    if len(text.split()) < self.min_length:
+                        continue
+
+                    #TODO: check if label is in classes of interest
+                    # if label not in self.class_converter.values():
+                    #     continue
+
+                    self.texts.append(text)
+                    self.labels.append(self.class_converter[label])
 
     def __len__(self):
         return len(self.texts)
