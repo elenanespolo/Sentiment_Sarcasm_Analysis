@@ -30,7 +30,7 @@ class BicodemixDataSet(Dataset):
                 next(reader)
 
             for row in reader:
-                if len(row) < 5:
+                if len(row) < 3:
                     continue
                 text, sarcasm_label, sentiment_label = row
 
