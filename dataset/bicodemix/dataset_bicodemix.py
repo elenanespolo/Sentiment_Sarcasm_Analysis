@@ -12,7 +12,8 @@ class BicodemixDataSet(Dataset):
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.classes = classes
-        self.class_converter = {c: i for i, c in enumerate(self.classes)}
+        self.sarc_class_converter = {'sarc': 1, 'notsarc': 0}
+        self.sent_class_converter = {'positive': 1, 'negative': 0, 'neutral': 2}
         self.min_length = min_length
         self.header = header
 
@@ -41,7 +42,7 @@ class BicodemixDataSet(Dataset):
                 #     continue
 
                 self.texts.append(text)
-                self.labels.append((self.class_converter[sarcasm_label], self.class_converter[sentiment_label]))
+                self.labels.append((self.sarc_class_converter[sarcasm_label], self.sent_class_converter[sentiment_label]))
 
     def __len__(self):
         return len(self.texts)
