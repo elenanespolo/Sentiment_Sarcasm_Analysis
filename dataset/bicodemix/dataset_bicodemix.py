@@ -25,7 +25,8 @@ class BicodemixDataSet(Dataset):
         data_file = os.path.join(self.root_folder, self.file_name)
 
         with open(data_file, 'r', encoding='utf-8') as f:
-            reader = csv.reader(f)
+            reader = csv.reader(f, delimiter=';')
+
             if self.header:
                 next(reader)
 
