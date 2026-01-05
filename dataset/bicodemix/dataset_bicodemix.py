@@ -12,8 +12,7 @@ class BicodemixDataSet(Dataset):
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.classes = classes
-        self.sarc_class_converter = {'sarc': 1, 'notsarc': 0}
-        self.sent_class_converter = {'positive': 1, 'negative': 0, 'neutral': 2}
+        self.class_converter = {c: i for i, c in enumerate(self.classes)}
         self.min_length = min_length
         self.header = header
 
@@ -31,7 +30,7 @@ class BicodemixDataSet(Dataset):
                 next(reader)
 
             for i, row in enumerate(reader):
-                if len(row) != 3:
+                if len(row) < 3:
                     continue
                 text, sarcasm_label, sentiment_label = row
 
@@ -43,12 +42,7 @@ class BicodemixDataSet(Dataset):
                 #     continue
 
                 self.texts.append(text)
-                try:
-                    self.labels.append((self.sarc_class_converter[sarcasm_label], self.sent_class_converter[sentiment_label]))
-                except KeyError:
-                    print(f"Unknown label found: {sarcasm_label}, {sentiment_label} in row {i}. Skipping sample.")
-                    print(f"Text: {text}")
-                    continue
+                self.labels.append((self.class_converter[sarcasm_label], self.class_converter[sentiment_label]))
 
     def __len__(self):
         return len(self.texts)
