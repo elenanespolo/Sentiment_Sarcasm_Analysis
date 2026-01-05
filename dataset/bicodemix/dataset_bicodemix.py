@@ -25,12 +25,12 @@ class BicodemixDataSet(Dataset):
         data_file = os.path.join(self.root_folder, self.file_name)
 
         with open(data_file, 'r', encoding='utf-8') as f:
-            reader = csv.reader(f, delimiter=';')
+            reader = csv.reader(f)
 
             if self.header:
                 next(reader)
 
-            for row in reader:
+            for i, row in enumerate(reader):
                 if len(row) != 3:
                     continue
                 text, sarcasm_label, sentiment_label = row
@@ -43,7 +43,12 @@ class BicodemixDataSet(Dataset):
                 #     continue
 
                 self.texts.append(text)
-                self.labels.append((self.sarc_class_converter[sarcasm_label], self.sent_class_converter[sentiment_label]))
+                try:
+                    self.labels.append((self.sarc_class_converter[sarcasm_label], self.sent_class_converter[sentiment_label]))
+                except KeyError:
+                    print(f"Unknown label found: {sarcasm_label}, {sentiment_label} in row {i}. Skipping sample.")
+                    print(f"Text: {text}")
+                    continue
 
     def __len__(self):
         return len(self.texts)
