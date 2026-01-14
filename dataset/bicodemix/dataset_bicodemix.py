@@ -11,9 +11,15 @@ class BicodemixDataSet(Dataset):
         self.file_name = file_name
         self.tokenizer = tokenizer
         self.max_length = max_length
-        self.classes = classes
-        self.class_converter = {c: i for i, c in enumerate(self.classes)}
         self.min_length = min_length
+        
+        self.classes = classes
+        self.class_converter_sentiment = {c: i for i, c in enumerate(self.classes['sentiment'])}
+        self.class_converter_sarcasm = {c: i for i, c in enumerate(self.classes['sarcasm'])}
+        
+        self.class_weights_sentiment = {c: 0 for c in self.class_converter_sentiment.keys()}
+        self.class_weights_sarcasm = {c: 0 for c in self.class_converter_sarcasm.keys()}
+        
         self.header = header
 
         self.texts = []
@@ -25,11 +31,11 @@ class BicodemixDataSet(Dataset):
 
         with open(data_file, 'r', encoding='utf-8') as f:
             reader = csv.reader(f)
-
             if self.header:
                 next(reader)
 
-            for i, row in enumerate(reader):
+            # columns: text,sarcasm,sentiment
+            for row in reader:
                 if len(row) < 3:
                     continue
                 text, sarcasm_label, sentiment_label = row
@@ -37,13 +43,20 @@ class BicodemixDataSet(Dataset):
                 if len(text.split()) < self.min_length:
                     continue
 
-                #TODO: check if label is in classes of interest
-                # if label not in self.class_converter.values():
-                #     continue
-
                 self.texts.append(text)
-                self.labels.append((self.class_converter[sarcasm_label], self.class_converter[sentiment_label]))
-
+                self.labels.append((
+                    self.class_converter_sentiment[sentiment_label],
+                    self.class_converter_sarcasm[sarcasm_label]
+                ))
+                self.class_weights_sarcasm[sarcasm_label] += 1
+                self.class_weights_sentiment[sentiment_label] += 1
+    
+    def get_label_count(self):
+        return {
+            'sentiment': self.class_weights_sentiment,
+            'sarcasm': self.class_weights_sarcasm
+        }
+    
     def __len__(self):
         return len(self.texts)
 
@@ -77,15 +90,22 @@ class BicodemixDataSet(Dataset):
         }
 
 if __name__ == "__main__":
-    from transformers import BertTokenizer
+    from transformers import AutoTokenizer
 
     max_length = 200
     min_length = 1
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+
+    CFG = {
+        'root_folder': './dataset/besstie',
+        'file_name': 'train_SS_with_nan.csv',
+        'classes': {
+            'sentiment': ['0', '1', '2'],
+            'sarcasm': ['0', '1'],
+        }
+    }
+    tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
     dataset = BicodemixDataSet(
-        root_folder='dataset/bicodemix',
-        file_name='train.csv',
-        classes=['0', '1'],
+        **CFG,
         tokenizer=tokenizer,
         min_length=min_length,
         max_length=max_length
@@ -98,12 +118,14 @@ if __name__ == "__main__":
     print(f"Input IDs: {sample['input_ids']}")
     print(f"Attention Mask: {sample['attention_mask']}")
     print(f"Label: {sample['label']}")
+    print(f"Class weights sentiment: {dataset.class_weights_sentiment}")
+    print(f"Class weights sarcasm: {dataset.class_weights_sarcasm}")
 
     for sample in dataset:
         assert sample['input_ids'].shape[0] == max_length
         assert sample['attention_mask'].shape[0] == max_length
-        assert sample['label'].item() in range(len(dataset.classes))
-        # print(f"Text length (in words): {len(sample['text'].split())}")
-        # print((sample["input_ids"] != 0).sum().item())
+        assert sample['label'][0].item() in range(len(dataset.classes['sentiment']))
+        assert sample['label'][1].item() in range(len(dataset.classes['sarcasm']))
+        assert len(sample['label']) == 2
         assert min_length <= (sample["input_ids"] != 0).sum().item() <= max_length
     print("All samples passed the checks.")
