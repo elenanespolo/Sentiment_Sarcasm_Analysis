@@ -81,13 +81,6 @@ class BicodemixDataSet(Dataset):
             'attention_mask': encoding['attention_mask'].flatten(),
             'label': torch.tensor(label, dtype=torch.long)
         }
-    
-    def get_type(self):
-        return {
-            'variety': self.variety,
-            'source': self.source,
-            'task': self.task
-        }
 
 if __name__ == "__main__":
     from transformers import AutoTokenizer
