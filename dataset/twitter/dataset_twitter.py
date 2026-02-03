@@ -59,7 +59,7 @@ class TwitterDataSet(Dataset):
         text = self.texts[idx]
         label = self.labels[idx]
 
-        encoding = self.tokenizer.encode_plus(
+        encoding = self.tokenizer(
             text,
             add_special_tokens=True,
             max_length=self.max_length,

@@ -4,3 +4,5 @@ yelp_dataset.zip
 *__pycache__/
 wandb/
 .ipynb_checkpoints/
+artifacts/
+models/
