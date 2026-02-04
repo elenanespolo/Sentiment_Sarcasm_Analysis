@@ -12,6 +12,8 @@ class BicodemixDataSet(Dataset):
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.min_length = min_length
+
+        self.task = kwargs.get('task', None)
         
         self.classes = classes
         self.class_converter_sentiment = {c: i for i, c in enumerate(self.classes['sentiment'])}
@@ -42,14 +44,22 @@ class BicodemixDataSet(Dataset):
 
                 if len(text.split()) < self.min_length:
                     continue
-
+                
+                label = ()
+                if 'sentiment' in self.task:
+                    if sentiment_label != '':
+                        label += (self.class_converter_sentiment[sentiment_label],)
+                        self.class_weights_sentiment[sentiment_label] += 1
+                    else:
+                        continue
+                if 'sarcasm' in self.task:
+                    if sarcasm_label != '':
+                        label += (self.class_converter_sarcasm[sarcasm_label],)
+                        self.class_weights_sarcasm[sarcasm_label] += 1
+                    else:
+                        continue
                 self.texts.append(text)
-                self.labels.append((
-                    self.class_converter_sentiment[sentiment_label],
-                    self.class_converter_sarcasm[sarcasm_label]
-                ))
-                self.class_weights_sarcasm[sarcasm_label] += 1
-                self.class_weights_sentiment[sentiment_label] += 1
+                self.labels.append(label)
     
     def get_label_count(self):
         return {
