@@ -20,7 +20,7 @@ You can run the training directly in the cloud using a GPU.
 
 1.  Open the notebook 'train_on_BESSTIE.ipynb'.
 2.  Click on the "Open in Colab" button (if available) or upload it to your Drive.
-3.  **Important:** Make sure to select a GPU Runtime (Runtime > Change runtime type > T4 GPU).
+3.  **Important:** Make sure to select a GPU Runtime (`Runtime` > `Change runtime type` > `T4 GPU`).
 4.  Run the cells sequentially. The notebook will automatically clone this repository to fetch the necessary utility scripts.
 
 ### Alternative: Local Exectuion
@@ -40,10 +40,10 @@ If you prefer running it locally:
  ## Configuration
  You can reproduce different experiments by modifying the `CFG` dictionary at the beginning of the notebook:
 
-*   **training_dataset_name**: Choose the source dataset ('BESSTIE', 'twitter', 'bicodemix').
-*   **classification_head**: Select the architecture ('linear', 'conv', 'lstm').
-*   **use_spAtten**: Set to 'True' to enable Sparse Attention, 'False' for standard BERT.
-*   **variety**: Select the English variety for training ('en-AU', 'en-IN', 'en-UK').
+*   **`training_dataset_name`**: Choose the source dataset (`'BESSTIE'`, `'twitter'`, `'bicodemix'`).
+*   **`classification_head`**: Select the architecture (`'linear'`, `'conv'`, `'lstm'`).
+*   **`use_spAtten`**: Set to `True` to enable Sparse Attention, `False` for standard BERT.
+*   **`variety`**: Select the English variety for training (`'en-AU'`, `'en-IN'`, `'en-UK'`).
 
 Example configuration for the Baseline:
 ```python
