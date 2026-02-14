@@ -32,7 +32,7 @@ If you prefer running it locally:
    ```
 2. Install dependencies:
    ```bash
-   pip install torch transformers pandas matplotlib seaborn scikit-learn
+   pip install pandas numpy torch os transformers collections matplotlib seaborn scikit-learn
    ```
 3. Run the notebook or the script.
 
