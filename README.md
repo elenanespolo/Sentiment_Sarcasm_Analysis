@@ -18,7 +18,7 @@ The entire pipeline (Data download, Training, Validation, Testing) is self-conta
 ### Google Colab
 You can run the training directly in the cloud using a GPU.
 
-1.  Open the notebook 'train_on_BESSTIE.ipynb'.
+1.  Open the notebook `train_on_BESSTIE.ipynb`.
 2.  Click on the "Open in Colab" button (if available) or upload it to your Drive.
 3.  **Important:** Make sure to select a GPU Runtime (`Runtime` > `Change runtime type` > `T4 GPU`).
 4.  Run the cells sequentially. The notebook will automatically clone this repository to fetch the necessary utility scripts.
